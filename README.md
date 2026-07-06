@@ -120,7 +120,7 @@ docker run -d --hostname rabbitmq --name rabbitmq \
 -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
 
-### 3. Open Three Terminals
+### 3. Open Two Terminals
 
 **Terminal 1 – Flask API**
 
