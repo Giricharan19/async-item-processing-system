@@ -9,55 +9,13 @@ import pika
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
-# Initialize database
 db.init_app(app)
 
-# Create tables
 with app.app_context():
     db.create_all()
 
-
-def publish_to_rabbitmq(item_id, item_name):
-    """Publish message to RabbitMQ queue"""
-    try:
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=Config.RABBITMQ_HOST)
-        )
-        channel = connection.channel()
-        
-        # Declare queue
-        channel.queue_declare(queue=Config.RABBITMQ_QUEUE, durable=True)
-        
-        # Prepare message
-        message = json.dumps({
-            'item_id': item_id,
-            'item': item_name
-        })
-        
-        # Publish message
-        channel.basic_publish(
-            exchange='',
-            routing_key=Config.RABBITMQ_QUEUE,
-            body=message,
-            properties=pika.BasicProperties(
-                delivery_mode=2,  # Make message persistent
-            )
-        )
-        
-        connection.close()
-        return True
-    except Exception as e:
-        print(f"Error publishing to RabbitMQ: {e}")
-        return False
-
-
 @app.route("/", methods=["POST"])
 def create_item():
-    """
-    Endpoint: POST /
-    Accepts: {"item":"book"}
-    """
     try:
         data = request.get_json()
         
@@ -65,16 +23,13 @@ def create_item():
             return jsonify({"error": "Missing 'item' field"}), 400
         
         item_name = data['item']
-        
-        # Insert into database with status 'pending'
+    
         item = Item(item=item_name, status='pending')
         db.session.add(item)
         db.session.commit()
         
-        # Send to RabbitMQ
-        publish_to_rabbitmq(item.id, item_name)
+        process_item_task.delay(item.id, item.item)
         
-        # Return 202 Accepted
         return jsonify({
             "message": "Item accepted for processing",
             "id": item.id,
@@ -96,8 +51,8 @@ def make_request(delay_value):
         print(f"Request failed: {e}")
         return False
 
-                               
-@app.route("/", methods=["GET"])
+
+@app.route("/delay", methods=["GET"])
 def process_concurrent_requests():
     """
     Endpoint: GET /?delay_value=2
@@ -114,21 +69,21 @@ def process_concurrent_requests():
         except ValueError:
             return jsonify({"error": "delay_value must be an integer"}), 400
         
-        # Measure time
+
         start_time = time.time()
         
-        # Create 5 threads
+
         threads = []
         for _ in range(5):
             thread = threading.Thread(target=make_request, args=(delay_value,))
             threads.append(thread)
             thread.start()
         
-        # Wait for all threads to complete
+
         for thread in threads:
             thread.join()
         
-        # Calculate time taken
+
         time_taken = time.time() - start_time
         
         return jsonify({
