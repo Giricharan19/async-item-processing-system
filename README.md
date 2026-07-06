@@ -1,8 +1,8 @@
-# 🚀 Async Item Processing System
+# Async Item Processing System
 
 An asynchronous item processing system built using **Flask, RabbitMQ, Celery, SQLite, Python Threading, and Docker**.
 
-## 📌 Features
+## Features
 
 - REST API using Flask
 - Asynchronous background processing with Celery
@@ -13,7 +13,7 @@ An asynchronous item processing system built using **Flask, RabbitMQ, Celery, SQ
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - Python
 - Flask
@@ -27,7 +27,7 @@ An asynchronous item processing system built using **Flask, RabbitMQ, Celery, SQ
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 processing_items/
@@ -42,7 +42,7 @@ processing_items/
 
 ---
 
-## 🔄 Workflow
+## Workflow
 
 ```
 Client
@@ -68,7 +68,7 @@ SQLite (Completed)
 
 ---
 
-## 🐳 Why Docker?
+## Why Docker?
 
 Docker runs RabbitMQ in an isolated container, eliminating the need to install **Erlang** and **RabbitMQ** manually. This makes the project portable and easy to set up on any machine.
 
@@ -91,7 +91,7 @@ Password: `guest`
 
 ---
 
-## 🧵 Why 5 Threads?
+## Why 5 Threads?
 
 The GET API creates **5 threads** to make concurrent HTTP requests.
 
@@ -105,7 +105,7 @@ This demonstrates concurrent execution for I/O-bound tasks.
 
 ---
 
-## ▶️ Running the Project
+## Running the Project
 
 ### 1. Install Dependencies
 
@@ -150,7 +150,7 @@ celery -A tasks:celery_app worker --loglevel=info
 
 ---
 
-## 📬 API Endpoints
+## API Endpoints
 
 ### POST /
 
@@ -170,7 +170,7 @@ Creates 5 concurrent threads to demonstrate asynchronous request handling.
 
 ---
 
-## 📖 Key Concepts
+## Key Concepts
 
 - Producer-Consumer Architecture
 - Asynchronous Task Processing
