@@ -128,13 +128,8 @@ docker run -d --hostname rabbitmq --name rabbitmq \
 python app.py
 ```
 
-**Terminal 2 – RabbitMQ Consumer**
 
-```bash
-python celery_worker.py
-```
-
-**Terminal 3 – Celery Worker**
+**Terminal 2 – Celery Worker**
 
 **Windows**
 
